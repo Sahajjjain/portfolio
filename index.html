@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sahaj — Portfolio</title>
+  
+  <!-- SEO basics -->
+  <meta name="description" content="Sahaj Jain — B.Tech CSE student building fast, beautiful web apps. Front‑end polish, backend reliability, and DSA-driven problem solving." />
+  <meta name="author" content="Sahaj Jain" />
+  <link rel="canonical" href="https://your-domain.example/" />
+
+  <!-- Social cards -->
+  <meta property="og:title" content="Sahaj — Portfolio" />
+  <meta property="og:description" content="I build fast, beautiful apps with clean UI and measurable impact." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      /* Light/Dark tokens */
+      color-scheme: light dark;
+      --bg1:#071026; --bg2:#06283d; --accent:#00e5ff; --muted:#9fb7c9; --text:#eaf6ff; --card: rgba(255,255,255,0.04);
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg1:#f7fbff; --bg2:#dff1ff; --text:#0c2233; --card: rgba(0,0,0,0.04); --muted:#4f6b7c; --accent:#007aff; }
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+
+    /* particles canvas sits behind everything */
+    canvas#bg{position:fixed;inset:0;z-index:0;filter:blur(0px);opacity:0.28;pointer-events:none}
+
+    /* floating gradient blobs */
+    .blob{position:fixed;border-radius:50%;filter:blur(80px);opacity:.5;mix-blend-mode:screen;z-index:0}
+    .blob.a{width:520px;height:520px;left:-160px;top:-120px;background:radial-gradient(circle,#0ff 0%,#0077b6 60%)}
+    .blob.b{width:420px;height:420px;right:-120px;bottom:-140px;background:radial-gradient(circle,#5ddcff 0%,#004e92 60%)}
+
+    /* header / nav */
+    header{
+      position:sticky;top:0;z-index:10;padding:16px 6%;display:flex;align-items:center;justify-content:space-between;
+      backdrop-filter:saturate(140%) blur(10px);background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.08));
+      border-bottom:1px solid rgba(255,255,255,0.06)
+    }
+    .brand{font-weight:800;color:var(--accent);letter-spacing:0.6px;font-size:1.15rem}
+    nav{display:flex;align-items:center;gap:18px}
+    nav a{color:rgba(234,246,255,0.9);text-decoration:none;font-weight:600}
+    @media (prefers-color-scheme: light){nav a{color:#0c2233}}
+    nav a:hover{color:#fff;transform:translateY(-2px)}
+    @media (prefers-color-scheme: light){nav a:hover{color:#000}}
+
+    /* mobile nav */
+    .menu-btn{display:none;border:1px solid rgba(255,255,255,.15);background:transparent;color:inherit;padding:8px 12px;border-radius:10px;font-weight:700}
+    .menu-btn[aria-expanded="true"]{outline:2px solid var(--accent)}
+    .nav-links{display:flex;gap:18px}
+    @media(max-width:820px){
+      .menu-btn{display:inline-flex}
+      .nav-links{position:fixed;inset:auto 0 0 0;display:none;flex-direction:column;gap:12px;padding:16px 6%;
+                 background:linear-gradient(180deg, rgba(0,0,0,.85), rgba(0,0,0,.65));backdrop-filter:blur(10px)}
+      .nav-links.open{display:flex}
+      .nav-links a{font-size:1.05rem}
+    }
+
+    /* hero */
+    .hero{min-height:72vh;padding:40px 6%;display:flex;flex-direction:column;justify-content:center;gap:14px;z-index:3;position:relative}
+    .eyebrow{color:var(--muted);font-weight:600;letter-spacing:1px}
+    h1{font-size:clamp(2rem, 4vw + 1rem, 3.25rem);line-height:1.06;
+       background:linear-gradient(90deg,var(--accent),#6fe9ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    p.lead{color:#cfeffb;max-width:780px;font-size:1.05rem}
+    @media (prefers-color-scheme: light){p.lead{color:#284b63}}
+    .cta-row{margin-top:10px;display:flex;gap:12px;flex-wrap:wrap}
+    .btn{background:var(--accent);color:#022029;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:700;box-shadow:0 10px 30px rgba(2,12,20,0.45);transition:transform .18s,opacity .18s}
+    .btn.alt{background:transparent;border:1px solid rgba(255,255,255,0.12);color:inherit}
+    .btn:hover{transform:translateY(-6px)}
+
+    /* sections */
+    section{padding:64px 6%;position:relative;z-index:2;scroll-margin-top:90px}
+    .card{background:var(--card);padding:20px;border-radius:12px;margin-bottom:18px;backdrop-filter: blur(8px);box-shadow:0 8px 30px rgba(2,6,23,0.6);transition:transform .25s}
+    .card:hover{transform:translateY(-8px)}
+
+    /* grid */
+    .grid{display:grid;gap:16px}
+    .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .skill{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));font-weight:600}
+
+    h2.section-title{font-size:1.6rem;color:var(--accent);margin-bottom:12px}
+
+    /* projects */
+    .project-hero{display:flex;flex-direction:column;gap:12px}
+    .project-thumb{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:linear-gradient(135deg, rgba(0,122,204,0.18), rgba(0,210,255,0.12));display:flex;align-items:center;justify-content:center}
+    .project-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .project-title{font-weight:800}
+    .small{font-size:0.9rem;color:var(--muted)}
+
+    /* contact form */
+    form{display:flex;flex-direction:column;gap:12px;max-width:700px}
+    input,textarea{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:transparent;color:inherit;outline:none}
+    textarea{resize:vertical;min-height:120px}
+
+    footer{padding:28px 6%;text-align:center;color:#98cfe1;background:linear-gradient(180deg, transparent, rgba(0,0,0,0.08))}
+    @media (prefers-color-scheme: light){footer{color:#284b63}}
+
+    /* reveal animations */
+    .reveal{opacity:0;transform:translateY(18px);transition:all .7s cubic-bezier(.2,.9,.3,1)}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* responsiveness fine-tuning */
+    @media(max-width:720px){
+      header{padding:14px 5%}
+      .hero{padding:24px 5%}
+      .btn{padding:11px 16px}
+      section{padding:52px 5%}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- background visuals -->
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="blob a" aria-hidden="true"></div>
+  <div class="blob b" aria-hidden="true"></div>
+
+  <header>
+    <div class="brand">Sahaj<span style="opacity:.7">.</span></div>
+    <button class="menu-btn" id="menuBtn" aria-controls="primary-navigation" aria-expanded="false" aria-label="Toggle navigation">Menu</button>
+    <nav id="primary-navigation" class="nav-links" role="navigation">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+      <a href="https://github.com/your-github" target="_blank" rel="noreferrer">GitHub</a>
+      <a href="https://www.linkedin.com/in/sahaj-jain-79985b291/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile">LinkedIn</a>
+      <a class="btn alt" href="/Sahaj_Jain_Resume.pdf" target="_blank" rel="noreferrer" aria-label="Download resume">Resume</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow reveal">Let's build the future — one line of clean code at a time</div>
+      <h1 class="reveal">Hey, I'm <span style="color:var(--accent)">Sahaj</span> — I build fast, beautiful apps.</h1>
+      <p class="lead reveal">B.Tech CSE student. I craft polished web experiences with an emphasis on performance, design and meaningful engineering. Clean UI, clean logic, measurable impact.</p>
+      <div class="cta-row reveal">
+        <a class="btn" href="#projects">View Projects</a>
+        <a class="btn alt" href="#contact">Contact Me</a>
+        <a class="btn alt" href="mailto:sahajjain137@gmail.com">Email</a>
+      </div>
+    </section>
+
+    <section id="about" aria-labelledby="about-title">
+      <h2 class="section-title reveal" id="about-title">About</h2>
+      <div class="card reveal">
+        <p>I’m Sahaj — curious dev, problem-solver, and future-focused engineer. I love building products that are pleasant to use and efficient under the hood. I focus on front-end polish, backend reliability, and learning DSA to make smarter systems.</p>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2 class="section-title reveal">Skills</h2>
+      <div class="grid cols-3 reveal">
+        <div class="skill card">Java & C++ — Strong fundamentals & DSA</div>
+        <div class="skill card">HTML • CSS • JavaScript • React</div>
+        <div class="skill card">Node.js • Express • MongoDB / SQL</div>
+        <div class="skill card">Responsive UI • UX basics • Figma</div>
+        <div class="skill card">Git • Testing • Performance Optimization</div>
+        <div class="skill card">Problem Solving — Competitive practice</div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title reveal">Projects (select)</h2>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+        <article class="card reveal">
+          <div class="project-hero">
+            <div class="project-thumb" aria-label="Portfolio screenshot placeholder">
+              <!-- Replace with your screenshot -->
+              <img loading="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1280' height='720'%3E%3Crect width='100%25' height='100%25' fill='%23007acc'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='48' font-family='Arial'%3EPortfolio Screenshot%3C/text%3E%3C/svg%3E" alt="Portfolio project preview"/>
+            </div>
+            <div class="project-title">Portfolio — Modern single-file portfolio (this site)</div>
+            <p class="small">A fast, responsive portfolio deployed on GitHub Pages. Focus: design, accessibility, performance.</p>
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <a class="btn" href="#" onclick="alert('Add live URL')">Live</a>
+              <a class="btn alt" href="#" onclick="alert('Add repo URL')">Repo</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="project-hero">
+            <div class="project-thumb" aria-label="DSA Visualizer screenshot placeholder">
+              <img loading="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1280' height='720'%3E%3Crect width='100%25' height='100%25' fill='%2300bcd4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='48' font-family='Arial'%3EDSA Visualizer%3C/text%3E%3C/svg%3E" alt="DSA Visualizer preview"/>
+            </div>
+            <div class="project-title">DSA Visualizer</div>
+            <p class="small">Interactive visual tools for arrays, linked lists and trees — designed for learners.</p>
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <a class="btn" href="#" onclick="alert('Add demo URL')">Demo</a>
+              <a class="btn alt" href="#" onclick="alert('Add repo URL')">Repo</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card reveal">
+          <div class="project-hero">
+            <div class="project-thumb" aria-label="College Management screenshot placeholder">
+              <img loading="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1280' height='720'%3E%3Crect width='100%25' height='100%25' fill='%23673ab7'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-size='48' font-family='Arial'%3ECollege Management%3C/text%3E%3C/svg%3E" alt="College Management System preview"/>
+            </div>
+            <div class="project-title">College Management System</div>
+            <p class="small">A Java+MySQL app to manage students, faculty & courses.</p>
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <a class="btn" href="#" onclick="alert('Add live URL')">Live</a>
+              <a class="btn alt" href="#" onclick="alert('Add repo URL')">Repo</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title reveal">Contact</h2>
+      <div class="card reveal">
+        <p class="small">Hit me up — for internships, collabs or to just chat about tech.</p>
+
+        <!-- Replace 'yourformid' with your Formspree ID or keep and use mailto fallback -->
+        <form id="contact-form" action="https://formspree.io/f/yourformid" method="POST">
+          <label class="small" for="name">Your name</label>
+          <input id="name" name="name" type="text" placeholder="Your name" required autocomplete="name">
+          <label class="small" for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required autocomplete="email">
+          <label class="small" for="message">Message</label>
+          <textarea id="message" name="message" placeholder="A short message..." required></textarea>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <button class="btn" type="submit">Send message</button>
+            <a class="btn alt" href="mailto:sahajjain137@gmail.com">Email directly</a>
+            <div id="form-status" class="small" style="margin-left:12px;color:var(--muted)" aria-live="polite"></div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>© <span id="year"></span> Sahaj • Built with ❤️ • <span class="small">Clean code, good vibes</span></div>
+  </footer>
+
+  <!-- Structured data (Organization/Person) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Sahaj Jain",
+    "email": "mailto:sahajjain137@gmail.com",
+    "url": "https://your-domain.example/",
+    "sameAs": [
+      "https://www.linkedin.com/in/sahaj-jain-79985b291/",
+      "https://github.com/your-github"
+    ],
+    "jobTitle": "Student / Developer"
+  }
+  </script>
+
+  <script>
+  /* set year */
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  /* Mobile menu toggle */
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('primary-navigation');
+  menuBtn.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
+  });
+  // close menu when a link is clicked (mobile)
+  navLinks.addEventListener('click', (e)=>{
+    if(e.target.tagName === 'A' && navLinks.classList.contains('open')){
+      navLinks.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  /* PARTICLES background — perf-aware */
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+  let W = innerWidth, H = innerHeight, DPR = Math.min(devicePixelRatio || 1, 2);
+  function sizeCanvas(){
+    canvas.width = W * DPR; canvas.height = H * DPR; canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  sizeCanvas();
+
+  const particles = [];
+  const baseCount = Math.floor((W*H)/120000) + 16; // slightly reduced for mobile
+  const PCOUNT = Math.min(baseCount, 80);
+  function rand(min,max){return Math.random()*(max-min)+min}
+  for(let i=0;i<PCOUNT;i++){
+    particles.push({x:rand(0,W), y:rand(0,H), r:rand(0.6,2.2), vx:rand(-0.25,0.25), vy:rand(-0.25,0.25), a:rand(0.08,0.35)});
+  }
+  let animId = 0, running = true;
+  function draw(){
+    if(!running) return;
+    ctx.clearRect(0,0,W,H);
+    for(let p of particles){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0) p.x = W; if(p.x>W) p.x = 0;
+      if(p.y<0) p.y = H; if(p.y>H) p.y = 0;
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(150,220,255,'+p.a+')';
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fill();
+    }
+    animId = requestAnimationFrame(draw);
+  }
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function start(){ running = true; cancelAnimationFrame(animId); draw(); }
+  function stop(){ running = false; cancelAnimationFrame(animId); }
+  if(!prefersReduced.matches) start();
+  prefersReduced.addEventListener('change', e=>{ e.matches ? stop() : start(); });
+  window.addEventListener('resize', ()=>{ W=innerWidth; H=innerHeight; sizeCanvas(); });
+  document.addEventListener('visibilitychange', ()=>{ document.hidden ? stop() : start(); });
+
+  /* scroll reveal */
+  const reveals = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.15});
+  reveals.forEach(r=>obs.observe(r));
+
+  /* contact form AJAX submit (Formspree) with graceful fallback */
+  const form = document.getElementById('contact-form');
+  const status = document.getElementById('form-status');
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    status.style.color = '';
+    status.textContent = 'Sending...';
+    const data = new FormData(form);
+    try{
+      const res = await fetch(form.action, {
+        method: 'POST', body: data, headers: { 'Accept': 'application/json' }
+      });
+      if(res.ok){
+        status.style.color = '#9fffcf';
+        status.textContent = 'Message sent — thank you!';
+        form.reset();
+      }else{
+        const json = await res.json().catch(()=>null);
+        throw new Error((json && json.error) ? json.error : 'Failed to send');
+      }
+    }catch(err){
+      status.style.color = '#ffd1d1';
+      status.innerHTML = 'Could not send — try <a href="mailto:sahajjain137@gmail.com" style="color:var(--accent)">email</a> instead.';
+      console.error(err);
+    }
+  });
+  </script>
+</body>
+</html>
